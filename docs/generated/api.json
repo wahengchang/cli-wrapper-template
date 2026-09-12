@@ -1,0 +1,740 @@
+{
+  "binary": "git",
+  "description": "Distributed version control system.",
+  "globalArgs": [
+    "--no-pager"
+  ],
+  "commands": [
+    {
+      "kind": "command",
+      "path": "add",
+      "binary": "git",
+      "description": "Add file contents to the index.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager add [--all] [--dry-run] <paths>...",
+      "jsUsage": "git.add({ all?: boolean, dryRun?: boolean, paths: string[] })",
+      "params": [
+        {
+          "name": "all",
+          "type": "boolean",
+          "flag": "--all",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Stage every change, including deletions.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--all]"
+        },
+        {
+          "name": "dryRun",
+          "type": "boolean",
+          "flag": "--dry-run",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Report what would be staged without staging it.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--dry-run]"
+        },
+        {
+          "name": "paths",
+          "type": "string[]",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Paths to stage.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<paths>..."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Stage two files",
+          "js": "await git.add({\n  paths: ['README.md', 'src/index.ts'],\n})",
+          "cli": "git --no-pager add README.md src/index.ts"
+        }
+      ],
+      "related": [
+        "commit",
+        "status"
+      ],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "commit",
+      "binary": "git",
+      "description": "Record staged changes to the repository.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager commit --message <message> [--amend] [--allow-empty] [--author <author>] [--verify]",
+      "jsUsage": "git.commit({ message: string, amend?: boolean, allowEmpty?: boolean, author?: string, verify?: boolean })",
+      "params": [
+        {
+          "name": "message",
+          "type": "string",
+          "flag": "--message",
+          "positional": false,
+          "required": true,
+          "applyDefault": false,
+          "description": "Commit message.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "--message <message>"
+        },
+        {
+          "name": "amend",
+          "type": "boolean",
+          "flag": "--amend",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Replace the previous commit.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--amend]"
+        },
+        {
+          "name": "allowEmpty",
+          "type": "boolean",
+          "flag": "--allow-empty",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Permit a commit with no staged changes.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--allow-empty]"
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "flag": "--author",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Override the commit author, as \"Name <email>\".",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--author <author>]"
+        },
+        {
+          "name": "verify",
+          "type": "boolean",
+          "flag": "--verify",
+          "positional": false,
+          "required": false,
+          "default": true,
+          "applyDefault": false,
+          "description": "Run pre-commit and commit-msg hooks.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--verify]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Commit staged changes",
+          "js": "await git.commit({\n  message: 'Add wrapper template',\n})",
+          "cli": "git --no-pager commit --message 'Add wrapper template'"
+        },
+        {
+          "title": "Commit without hooks",
+          "js": "await git.commit({\n  message: 'wip',\n  verify: false,\n})",
+          "cli": "git --no-pager commit --message wip --no-verify"
+        }
+      ],
+      "related": [
+        "add",
+        "status"
+      ],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "config.get",
+      "binary": "git",
+      "description": "Read one configuration value.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager config <key>",
+      "jsUsage": "git.config.get({ key: string })",
+      "params": [
+        {
+          "name": "key",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Configuration key.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<key>"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Read the configured user name",
+          "js": "await git.config.get({\n  key: 'user.name',\n})",
+          "cli": "git --no-pager config user.name"
+        }
+      ],
+      "output": {
+        "parse": "custom",
+        "type": "string"
+      },
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "config.list",
+      "binary": "git",
+      "description": "List every configuration value.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager config [--list]",
+      "jsUsage": "git.config.list({ list?: boolean })",
+      "params": [
+        {
+          "name": "list",
+          "type": "boolean",
+          "flag": "--list",
+          "positional": false,
+          "required": false,
+          "default": true,
+          "applyDefault": true,
+          "description": "Required by git to list values.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--list]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Read all configuration",
+          "js": "await git.config.list()",
+          "cli": "git --no-pager config"
+        }
+      ],
+      "output": {
+        "parse": "custom",
+        "type": "GitConfig",
+        "description": "Configuration entries keyed by dotted name."
+      },
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "config.set",
+      "binary": "git",
+      "description": "Write one configuration value.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager config <key> <value>",
+      "jsUsage": "git.config.set({ key: string, value: string })",
+      "params": [
+        {
+          "name": "key",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Configuration key.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<key>"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Value to store.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<value>"
+        }
+      ],
+      "examples": [],
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "init",
+      "binary": "git",
+      "description": "Create an empty git repository.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager init [--bare] [--quiet] [--initial-branch <initial-branch>] [<directory>]",
+      "jsUsage": "git.init({ bare?: boolean, quiet?: boolean, initialBranch?: string, directory?: string })",
+      "params": [
+        {
+          "name": "bare",
+          "type": "boolean",
+          "flag": "--bare",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Create a bare repository.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--bare]"
+        },
+        {
+          "name": "quiet",
+          "type": "boolean",
+          "flag": "--quiet",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Suppress informational output.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--quiet]"
+        },
+        {
+          "name": "initialBranch",
+          "type": "string",
+          "flag": "--initial-branch",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Name of the initial branch.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--initial-branch <initial-branch>]"
+        },
+        {
+          "name": "directory",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": false,
+          "applyDefault": false,
+          "description": "Directory to initialise.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[<directory>]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Initialise a repository in ./tmp",
+          "js": "await git.init({\n  directory: './tmp',\n})",
+          "cli": "git --no-pager init ./tmp"
+        }
+      ],
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "log",
+      "binary": "git",
+      "description": "Show commit history.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager log [--max-count <max-count>] [--format=<format>] [--author <author>] [--since <since>] [<revision-range>]",
+      "jsUsage": "git.log({ maxCount?: number, format?: string, author?: string, since?: string, revisionRange?: string })",
+      "params": [
+        {
+          "name": "maxCount",
+          "type": "number",
+          "flag": "--max-count",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Limit the number of commits.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--max-count <max-count>]"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "flag": "--format",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Pretty-print format, for example \"%H %s\".",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--format=<format>]"
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "flag": "--author",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Only commits by this author.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--author <author>]"
+        },
+        {
+          "name": "since",
+          "type": "string",
+          "flag": "--since",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Only commits newer than this date.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--since <since>]"
+        },
+        {
+          "name": "revisionRange",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": false,
+          "applyDefault": false,
+          "description": "Revision or range, for example \"main..HEAD\".",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[<revision-range>]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Last three subjects",
+          "js": "await git.log({\n  maxCount: 3,\n  format: '%s',\n})",
+          "cli": "git --no-pager log --max-count 3 --format=%s"
+        }
+      ],
+      "output": {
+        "parse": "lines",
+        "type": "string[]",
+        "description": "One entry per output line."
+      },
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "remote",
+      "binary": "git",
+      "description": "Manage the set of tracked repositories.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager remote",
+      "jsUsage": "git.remote()",
+      "params": [],
+      "examples": [],
+      "output": {
+        "parse": "lines",
+        "type": "string[]",
+        "description": "Configured remote names."
+      },
+      "related": [],
+      "subcommands": [
+        {
+          "path": "remote.add",
+          "kind": "command",
+          "description": "Add a remote."
+        },
+        {
+          "path": "remote.remove",
+          "kind": "command",
+          "description": "Remove a remote."
+        },
+        {
+          "path": "remote.getUrl",
+          "kind": "command",
+          "description": "Print the URL of a remote."
+        }
+      ]
+    },
+    {
+      "kind": "command",
+      "path": "remote.add",
+      "binary": "git",
+      "description": "Add a remote.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager remote add [--fetch] <name> <url>",
+      "jsUsage": "git.remote.add({ fetch?: boolean, name: string, url: string })",
+      "params": [
+        {
+          "name": "fetch",
+          "type": "boolean",
+          "flag": "--fetch",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Fetch the remote immediately.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--fetch]"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Remote name.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<name>"
+        },
+        {
+          "name": "url",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Remote URL.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<url>"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Add an origin remote",
+          "js": "await git.remote.add({\n  name: 'origin',\n  url: 'https://example.com/repo.git',\n})",
+          "cli": "git --no-pager remote add origin https://example.com/repo.git"
+        }
+      ],
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "remote.getUrl",
+      "binary": "git",
+      "description": "Print the URL of a remote.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager remote get-url <name>",
+      "jsUsage": "git.remote.getUrl({ name: string })",
+      "params": [
+        {
+          "name": "name",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Remote name.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<name>"
+        }
+      ],
+      "examples": [],
+      "output": {
+        "parse": "custom",
+        "type": "string"
+      },
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "remote.remove",
+      "binary": "git",
+      "description": "Remove a remote.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager remote remove <name>",
+      "jsUsage": "git.remote.remove({ name: string })",
+      "params": [
+        {
+          "name": "name",
+          "type": "string",
+          "flag": null,
+          "positional": true,
+          "required": true,
+          "applyDefault": false,
+          "description": "Remote name.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "<name>"
+        }
+      ],
+      "examples": [],
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "revParse",
+      "binary": "git",
+      "description": "Resolve revisions and repository metadata.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager rev-parse [--abbrev-ref] [--show-toplevel] [<refs>...]",
+      "jsUsage": "git.revParse({ abbrevRef?: boolean, showToplevel?: boolean, refs?: string[] })",
+      "params": [
+        {
+          "name": "abbrevRef",
+          "type": "boolean",
+          "flag": "--abbrev-ref",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Print the short symbolic name of a ref.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--abbrev-ref]"
+        },
+        {
+          "name": "showToplevel",
+          "type": "boolean",
+          "flag": "--show-toplevel",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Print the root directory of the working tree.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--show-toplevel]"
+        },
+        {
+          "name": "refs",
+          "type": "string[]",
+          "flag": null,
+          "positional": true,
+          "required": false,
+          "applyDefault": false,
+          "description": "Revisions to resolve.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[<refs>...]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Current branch name",
+          "js": "await git.revParse({\n  abbrevRef: true,\n  refs: ['HEAD'],\n})",
+          "cli": "git --no-pager rev-parse --abbrev-ref HEAD"
+        }
+      ],
+      "output": {
+        "parse": "custom",
+        "type": "string",
+        "description": "Resolved value, trimmed."
+      },
+      "related": [],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "status",
+      "binary": "git",
+      "description": "Show the working tree status.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager status [--porcelain] [--branch] [--untracked-files=<no|normal|all>] [<paths>...]",
+      "jsUsage": "git.status({ porcelain?: boolean, branch?: boolean, untrackedFiles?: 'no' | 'normal' | 'all', paths?: string[] })",
+      "params": [
+        {
+          "name": "porcelain",
+          "type": "boolean",
+          "flag": "--porcelain",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Machine-readable output.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--porcelain]"
+        },
+        {
+          "name": "branch",
+          "type": "boolean",
+          "flag": "--branch",
+          "positional": false,
+          "required": false,
+          "applyDefault": false,
+          "description": "Include branch information.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--branch]"
+        },
+        {
+          "name": "untrackedFiles",
+          "type": "'no' | 'normal' | 'all'",
+          "flag": "--untracked-files",
+          "positional": false,
+          "required": false,
+          "default": "normal",
+          "applyDefault": false,
+          "description": "How to report untracked files.",
+          "values": [
+            "no",
+            "normal",
+            "all"
+          ],
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[--untracked-files=<no|normal|all>]"
+        },
+        {
+          "name": "paths",
+          "type": "string[]",
+          "flag": null,
+          "positional": true,
+          "required": false,
+          "applyDefault": false,
+          "description": "Limit the report to these paths.",
+          "aliases": [],
+          "deprecated": null,
+          "usage": "[<paths>...]"
+        }
+      ],
+      "examples": [
+        {
+          "title": "Machine-readable status",
+          "js": "await git.status({\n  porcelain: true,\n})",
+          "cli": "git --no-pager status --porcelain"
+        },
+        {
+          "title": "Status of one directory",
+          "js": "await git.status({\n  porcelain: true,\n  paths: ['src'],\n})",
+          "cli": "git --no-pager status --porcelain -- src"
+        }
+      ],
+      "output": {
+        "parse": "lines",
+        "type": "string[]",
+        "description": "One entry per output line."
+      },
+      "related": [
+        "add",
+        "commit"
+      ],
+      "subcommands": []
+    },
+    {
+      "kind": "command",
+      "path": "version",
+      "binary": "git",
+      "description": "Print the git version.",
+      "deprecated": null,
+      "cliUsage": "git --no-pager version",
+      "jsUsage": "git.version()",
+      "params": [],
+      "examples": [
+        {
+          "title": "Read the installed version",
+          "js": "await git.version()",
+          "cli": "git --no-pager version"
+        }
+      ],
+      "output": {
+        "parse": "custom",
+        "type": "string",
+        "description": "The raw version line, trimmed."
+      },
+      "related": [],
+      "subcommands": []
+    }
+  ]
+}
