@@ -21,9 +21,56 @@ change has you editing `src/core/`, stop — the answer is almost certainly a sc
 **3. Two commands give you all your feedback.** `toCommandLine()` shows what will run
 without running it; `npm run verify` proves it.
 
+## Where things live
+
+Four files matter. The paths below are this repository's `git` example; a wrapper for
+another CLI has the same four files in its own folder. You will normally touch the
+first and the third.
+
+| What | Where | Note |
+|---|---|---|
+| **The schema** — what you edit | `examples/git/schema.ts` | The wrapper's command definitions. One file per wrapped CLI. |
+| The client that exposes it | `examples/git/index.ts` | Thin: `createCLI({ schema })` plus a factory. Rarely changes. |
+| **Mapping tests** — what you add | `test/unit/example-git.test.ts` | One test per command: JS call → expected argv. |
+| Integration tests | `test/integration/git.test.ts` | Only for the few commands worth running the real binary for. |
+
+Two more worth knowing about, which you do **not** hand-edit:
+
+- `wrapper.config.ts` — points the tooling at your schema. Change it once, when you
+  wrap a different CLI.
+- `docs/generated/` — the API reference, produced by `npm run docs`. Every file says
+  "Do not edit by hand" at the top. `npm run docs:check` compares it byte for byte and
+  fails CI if it is stale, so regenerate rather than edit.
+
+Everything under `src/` is the generic engine, shared by every wrapper. Adding a
+command never requires changing it, and the other files in `test/unit/` test that
+engine, not your CLI — leave them alone.
+
+### Where a command goes in the schema
+
+The `commands` object mirrors the CLI's own hierarchy. A nested `commands` block adds
+one CLI word:
+
+```ts
+commands: {
+  gettime: { … },            // top level  → node cli.js gettime
+  maths: {                   // a group: contributes the word "maths"
+    commands: {
+      add: { … },            // subcommand → node cli.js maths add
+      multi: { … },          // subcommand → node cli.js maths multi
+    },
+  },
+}
+```
+
+So a top-level command is an entry in the root `commands`; a subcommand is an entry in
+its parent's `commands`. Nest as deep as the CLI does.
+
 ## The CLI in this walkthrough
 
-A tiny calculator CLI:
+The repository's real example wraps `git`, which is more than we need here, so this
+walkthrough uses a tiny calculator CLI instead. The steps are identical; only the
+schema contents differ.
 
 ```bash
 node cli.js maths add 1 2 3     # 6
@@ -90,12 +137,39 @@ multi: {
 },
 ```
 
-That is the entire change. Three things worth noticing:
+That is the entire change. Two things worth noticing: a positional array emits one
+argument per element (`3 5 4`), and `parse` gives `result.data` the return type of the
+function you supply — here `number`.
 
-- A positional array emits one argument per element: `3 5 4`.
-- `parse` gives `result.data` the return type of the function you supply — here `number`.
-- `description` is not decoration. Help and generated docs are made of it, and
-  `npm run schema:check` fails without it.
+### Mapping the common parameters
+
+These five cover most commands. The flag is derived from the JS name, so `dryRun`
+becomes `--dry-run` and you do not write it out:
+
+| The CLI takes | Declare | Call it with |
+|---|---|---|
+| `--name demo` | `{ type: 'string' }` | `{ name: 'demo' }` |
+| `--dry-run` | `{ type: 'boolean' }` | `{ dryRun: true }` |
+| `--count 3` | `{ type: 'number' }` | `{ count: 3 }` |
+| `demo` with no flag | `{ type: 'string', positional: true }` | `{ name: 'demo' }` |
+| `--tags a --tags b` | `{ type: 'string[]' }` (or `'number[]'`) | `{ tags: ['a', 'b'] }` |
+
+A parameter you leave out of the call is left out of the command line. Add
+`required: true` to reject the call instead. Flags are emitted in declaration order,
+then positionals in declaration order.
+
+Anything stranger — `--flag=value`, `--no-cache`, comma-separated lists, a fixed set of
+allowed values, a `--` before file arguments — has a schema field for it, listed under
+[which field do I need?](./schema-reference.md#which-field-do-i-need) in the reference.
+
+### What is actually required
+
+| Field | Required? |
+|---|---|
+| `type` | **Yes** — nothing works without it. |
+| `description` | Optional in the schema, but **required here**: this repo runs `schema:check` with `strict: true`, which turns a missing description into a build error. |
+| `required`, `positional`, `flag`, `output` | Optional. Omit them and you get a flag named after the JS key, taking a value, that the caller may skip. |
+| `examples` | Optional, and not enforced by any check — but they render into help and docs, so this repo adds one per command by convention. |
 
 ## Verify
 
@@ -135,8 +209,10 @@ npm run docs     # regenerate the API reference
 npm run verify   # lint, typecheck, schema check, docs check, tests
 ```
 
-Commit the schema entry, the test and the regenerated `docs/generated/` together. CI
-runs `docs:check`, so a schema change without its documentation fails the build.
+`npm run docs` rewrites `docs/generated/` from the schema — that is the only way those
+files should ever change. Commit the schema entry, the test and the regenerated docs
+together; CI runs `docs:check`, so a schema change without its documentation fails the
+build, and so does a hand-edit that the generator would not produce.
 
 You now also have, without writing any of it: help output in text, Markdown and JSON, a
 page under `docs/generated/`, autocomplete on `cli.maths.multi({ … })`, and a validation
@@ -144,15 +220,16 @@ error that rejects `numbers: 'three'` before any process starts.
 
 ## Definition of done
 
-Use this as the review checklist, so every contributor's commands look the same:
+Use this as the review checklist, so every contributor's commands look the same.
+The first three are enforced by `npm run verify`; the rest are for a reviewer to check.
 
-- [ ] The CLI line from question 1 was actually run in a terminal.
-- [ ] One schema entry added. Nothing under `src/core/` changed.
-- [ ] Every command and parameter has a `description`.
-- [ ] At least one `examples` entry.
-- [ ] A mapping test asserting the complete argv.
-- [ ] `npm run docs` output committed in the same change.
 - [ ] `npm run verify` is green.
+- [ ] Every command and parameter has a `description` (strict mode fails without it).
+- [ ] `npm run docs` output committed in the same change, regenerated rather than edited.
+- [ ] One schema entry added. Nothing under `src/` changed.
+- [ ] A mapping test asserting the complete argv.
+- [ ] The CLI line from question 1 was actually run in a terminal, and at least one
+      `examples` entry records it.
 
 ## Changing an existing command
 
