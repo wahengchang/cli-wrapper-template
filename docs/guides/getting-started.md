@@ -129,6 +129,11 @@ npm publish   # if you are publishing
 CI runs the same checks, including `docs:check`, so a schema change without
 regenerated documentation fails the build.
 
+## Next
+
+Adding further commands is a shorter, repeatable loop — hand
+[adding a command](./adding-a-command.md) to anyone joining the project.
+
 ## Where to put things
 
 | You are adding | It goes in |

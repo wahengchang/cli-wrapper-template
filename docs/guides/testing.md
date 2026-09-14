@@ -10,6 +10,9 @@ npm run test:integration   # drives the real CLI
 npm run typecheck         # includes the type-level API tests
 ```
 
+The procedure for adding a command, including the test to write, is in
+[adding a command](./adding-a-command.md).
+
 ## Three kinds of test
 
 ### 1. Infrastructure tests (`test/unit/`)

@@ -41,6 +41,8 @@ clone → configure → run → modify → test → deploy
 5. **Generate docs** — `npm run docs`.
 
 The full walkthrough is in [docs/guides/getting-started.md](./docs/guides/getting-started.md).
+Once a wrapper exists, adding or changing a single command follows one short,
+repeatable procedure: [docs/guides/adding-a-command.md](./docs/guides/adding-a-command.md).
 
 ### A schema
 
@@ -190,6 +192,7 @@ The published package is plain ES modules and runs on Node 20.19+.
 
 ## Guides
 
+- [Adding a command](./docs/guides/adding-a-command.md) — **start here** for day-to-day work: add or change one command
 - [Getting started](./docs/guides/getting-started.md) — wrap a new CLI, end to end
 - [Schema reference](./docs/guides/schema-reference.md) — every field, with examples
 - [Architecture](./docs/guides/architecture.md) — boundaries, extension points, decisions

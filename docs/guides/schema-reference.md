@@ -1,5 +1,8 @@
 # Schema reference
 
+Looking for the step-by-step procedure instead? See
+[adding a command](./adding-a-command.md). This page is the field-by-field reference.
+
 The schema is the source of truth for argv generation, validation, types, help and
 documentation. Everything on this page is optional except `binary`, `commands`, and
 each parameter's `type`.
