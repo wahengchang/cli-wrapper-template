@@ -7,6 +7,29 @@ The schema is the source of truth for argv generation, validation, types, help a
 documentation. Everything on this page is optional except `binary`, `commands`, and
 each parameter's `type`.
 
+## Which field do I need?
+
+Real CLIs are inconsistent. Every quirk below is handled by a schema field, never by
+code in `src/`:
+
+| The CLI does this | Use |
+|---|---|
+| requires `--flag=value` | `assign: true` |
+| has a negative form like `--no-verify` | `falseFlag: '--no-verify'` |
+| takes a comma-separated list | `delimiter: ','` |
+| accepts a fixed set of values | `values: ['a', 'b']` |
+| needs `--` before file arguments | `positionalSeparator: '--'` |
+| has no subcommand word where your JS API wants one | `command: []` |
+| is callable *and* has subcommands, like `git remote` | `invokable: true` |
+| needs a flag on every call | `default` + `applyDefault: true` |
+| legitimately accepts a positional starting with `-` | `allowDashValue: true` |
+| emits JSON or another structured format | `output.parse` — pass a function to type `result.data` |
+| is a script rather than a binary on PATH | `binary: 'node'` + `globalArgs: ['cli.js']` |
+| has a flag you have not modelled yet | `options.extraArgs` at the call site |
+
+If you hit something with no schema answer, that is a template bug worth raising — not
+a reason to hand-build argv.
+
 ## Schema
 
 ```ts
@@ -109,6 +132,18 @@ json: { type: 'boolean', default: true, applyDefault: true }
 Argument order is: `globalArgs`, command words, flags in declaration order,
 `positionalSeparator`, positionals in declaration order, then any `extraArgs`.
 
+### Positionals that look like flags
+
+A positional **string** starting with `-` is rejected, because a caller-supplied value
+that looks like a flag could inject an unintended option. Set `allowDashValue: true`
+where the CLI genuinely accepts such values.
+
+That guard is string-only, so a **negative number passes through**: with
+`{ type: 'number[]', positional: true }`, a call of `{ numbers: [-5, 3] }` emits
+`-5 3`. Numbers are legitimate values and blocking them would be wrong, so if the
+wrapped CLI would read `-5` as an option, declare `positionalSeparator: '--'` on the
+command and the values are emitted after `--`.
+
 ## Output
 
 ```ts
@@ -138,3 +173,16 @@ optional one, an array positional that is not last, `applyDefault` without a
 examples that do not satisfy their own command, dangling `related` entries,
 deprecations without a reason, and two commands that produce an identical invocation.
 Warnings become errors with `strict: true` in `wrapper.config.ts`.
+
+## Troubleshooting
+
+| You see | It means | Fix |
+|---|---|---|
+| `Schema check found 1 error(s)`<br>`missing-description  maths.multi.numbers` | A command or parameter has no description. | Add `description`. |
+| `Generated documentation is out of date.`<br>`missing  commands/<name>.md` | The schema changed but the docs were not regenerated. | `npm run docs`, then commit the result. |
+| `Invalid parameters for maths.multi:`<br>`- "numbers" must be an array, received string` | The caller passed the wrong type; nothing was executed. | Fix the call, or the parameter's `type` if the schema is wrong. |
+| `- missing required parameter "numbers"` | A `required` parameter was omitted. | Pass it, or drop `required` if the CLI does not need it. |
+| `CLIExitError: … exited with code 128` | Your argv reached the CLI and the CLI rejected it. | Read `error.argv`, paste that line into a terminal, and fix the schema until it works there. |
+| `CLIValidationError: unknown parameter "numbres", did you mean "numbers"?` | A typo at the call site. | Use the suggested name. |
+| `must not start with "-"` on a positional | A positional value looks like a flag — rejected to prevent argument injection. | Use the intended value, or set `allowDashValue: true` if the CLI really accepts it. |
+| Types do not narrow; everything is `string` | The schema was written without `defineSchema` (or `as const`). | Wrap the schema in `defineSchema({ … })`. |
