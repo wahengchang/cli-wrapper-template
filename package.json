@@ -1,0 +1,56 @@
+{
+  "name": "cli-wrapper-template",
+  "version": "0.1.0",
+  "description": "Reusable template for wrapping an existing CLI tool with a typed, schema-driven JavaScript API.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./help": {
+      "types": "./dist/help/index.d.ts",
+      "default": "./dist/help/index.js"
+    },
+    "./docs": {
+      "types": "./dist/docs/index.d.ts",
+      "default": "./dist/docs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "test:unit": "node --test \"test/unit/**/*.test.ts\"",
+    "test:integration": "node --test \"test/integration/**/*.test.ts\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "schema:check": "node scripts/schema-check.ts",
+    "docs": "node scripts/docs.ts",
+    "docs:check": "node scripts/docs.ts --check",
+    "verify": "npm run lint && npm run typecheck && npm run schema:check && npm run docs:check && npm test"
+  },
+  "keywords": [
+    "cli",
+    "wrapper",
+    "template",
+    "schema",
+    "typescript"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0"
+  }
+}
